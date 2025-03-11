@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Student Details</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Poppins', Arial, sans-serif;
+            background-color: #ecf0f1;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 40px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        /* Add to existing modal styles */
+        #saveModal .modal-content {
+            width: 300px;
+            padding: 20px;
+        }
+
+        #saveModal label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+
+        #saveModal select, #saveModal input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+        }
+
+        h1, h2 {
+            color: #2c3e50;
+        }
+
+        /* Table Styles */
+        table {
+            width: 100%;
+            margin-top: 15px;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #2c3e50;
+            color: white;
+        }
+
+        td {
+            color: #555;
+        }
+
+        tr:hover {
+            background-color: #f4f4f4;
+        }
+
+        /* Buttons */
+        .back-btn, .toggle-btn, .edit-btn, .enroll-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 20px;
+            color: white;
+            font-size: 16px;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .back-btn {
+            background: #3498db;
+        }
+
+        .back-btn:hover {
+            background: #2980b9;
+        }
+
+        .toggle-btn {
+            background: #27ae60;
+        }
+
+        .toggle-btn:hover {
+            background: #219150;
+        }
+
+        .edit-btn {
+            background: #f39c12;
+        }
+
+        .edit-btn:hover {
+            background: #e67e22;
+        }
+
+        .enroll-btn {
+            background: #f39c12;
+        }
+
+        .enroll-btn:hover {
+            background: #e67e22;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+            padding-top: 100px;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 50%;
+            text-align: center;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        .close:hover {
+            color: black;
+        }
+
+        /* Dropdown styles */
+        #subject-dropdown {
+            display: none;
+            position: absolute;
+            background-color: white;
+            border: 1px solid #ccc;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 300px;
+            padding: 10px 0;
+            z-index: 9999;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+
+        .subject-option {
+            padding: 10px;
+            cursor: pointer;
+            background-color: #f1f1f1;
+        }
+
+        .subject-option:hover {
+            background-color: #27ae60;
+            color: white;
+        }
+
+        /* Ensures that the subject list and enroll button are visible */
+        #selected-subjects-list {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f1f1f1;
+            min-height: 30px;
+            font-size: 14px;
+        }
+
+        /* Hide financial records by default */
+        #financial-records {
+            display: none;
+        }
+
+        /* Marks input fields */
+        .marks-input {
+            display: none;
+            width: 60px;
+            text-align: center;
+            padding: 5px;
+        }
+
+        .marks-cell {
+            cursor: pointer;
+        }
+
+        .marks-cell.editable {
+            background-color: #85ccec;
+            color: white;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container" data-student-id="{{ student[0] }}">
+
+        <h1>Student Details</h1>
+        <h2>{{ student[1] }} {{ student[2] }}</h2>
+
+        <button class="edit-btn" onclick="toggleEditMarks()">Edit Marks</button>
+        <button class="toggle-btn" onclick="toggleTables()">Show Financial Records</button>
+        <button class="enroll-btn" onclick="openEnrollModal()">Enroll in Subject(s)</button>
+        <button class="enroll-btn" onclick="viewResults()">Results</button>
+
+        <div id="academic-performance">
+            <h2>Academic Performance</h2>
+            <!-- In the academic performance table -->
+            <table>
+                <thead>
+                    <tr><th>Subject</th><th>Marks</th><th>Grade</th></tr>
+                </thead>
+                <tbody>
+                    {% for subject in student_marks %}
+                    <tr>
+                        <td>{{ subject[1] }}</td>
+                        <td class="marks-cell editable" 
+                            onclick="editMarks(event, '{{ subject[0] }}', '{{ subject[1] }}')"
+                            data-subject-id="{{ subject[0] }}">
+                            <span>{{ subject[2] if subject[2] is not none else 'N/A' }}</span>
+                            <input class="marks-input" type="number" 
+                                   value="{{ subject[2] if subject[2] is not none else '' }}" />
+                        </td>
+                        <td>{{ subject[3] }}</td>  <!-- Display the calculated grade -->
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div id="financial-records">
+            <h2>Financial Records</h2>
+            <table>
+                <thead>
+                    <tr><th>Amount Paid</th><th>Term</th><th>Year</th></tr>
+                </thead>
+                <tbody>
+                    {% for amount, term, year in fee_payments %}
+                    <tr><td>Ugx{{ amount }}</td><td>{{ term }}</td><td>{{ year }}</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <a href="{{ url_for('student_data') }}" class="back-btn">Back</a>
+        <button class="enroll-btn" onclick="openSaveModal()">Save Term Performance</button>
+    </div>
+
+    <!-- Enrollment Modal -->
+    <div id="enrollModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEnrollModal()">&times;</span>
+            <h2>Enroll Student in Subject(s)</h2>
+            <button class="enroll-btn" onclick="toggleSubjectDropdown()">Select Subjects</button>
+
+            <div id="subject-dropdown">
+                {% for subject in available_subjects %}
+                    <div class="subject-option" 
+                         onclick="selectSubject('{{ subject[0] }}', '{{ subject[1] }}')">
+                        {{ subject[1] }}  <!-- Show subject name -->
+                    </div>
+                {% endfor %}
+            </div>
+
+            <!-- Display selected subjects -->
+            <div id="selected-subjects-list"></div>
+
+            <!-- Updated form for multiple subjects -->
+            <form id="enrollment-form" action="/enroll_student_subject/{{ student[0] }}" method="POST" style="display: none;">
+                <input type="hidden" id="selected-subjects" name="subject_id" value="">
+                <button type="submit" class="enroll-btn">Enroll</button>
+            </form>
+            
+        </div>
+    </div>
+
+    <!-- Save Modal -->
+<div id="saveModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeSaveModal()">&times;</span>
+        <h2>Save Term Performance</h2>
+        <form id="save-performance-form">
+            <div>
+                <label>Term:</label>
+                <select id="term-select" required>
+                    <option value="1">Term 1</option>
+                    <option value="2">Term 2</option>
+                    <option value="3">Term 3</option>
+                </select>
+            </div>
+            <div>
+                <label>Year:</label>
+                <input type="number" id="year-input" required>
+            </div>
+            <button type="button" class="enroll-btn" onclick="savePerformance()">Save</button>
+        </form>
+    </div>
+</div>
+
+    <script>
+        let selectedSubjects = [];
+        let editMode = false;
+
+        function toggleTables() {
+            let academicSection = document.getElementById("academic-performance");
+            let financeSection = document.getElementById("financial-records");
+            let button = document.querySelector(".toggle-btn");
+
+            if (financeSection.style.display === "none") {
+                financeSection.style.display = "block";
+                academicSection.style.display = "none";
+                button.textContent = "Show Academic Performance";
+            } else {
+                financeSection.style.display = "none";
+                academicSection.style.display = "block";
+                button.textContent = "Show Financial Records";
+            }
+        }
+
+        // Add these functions to the script
+function openSaveModal() {
+    document.getElementById("saveModal").style.display = "block";
+    document.getElementById("year-input").value = new Date().getFullYear();
+}
+
+function closeSaveModal() {
+    document.getElementById("saveModal").style.display = "none";
+}
+
+function savePerformance() {
+    const term = document.getElementById("term-select").value;
+    const year = document.getElementById("year-input").value;
+    const studentId = document.querySelector('.container').dataset.studentId;
+    
+    // Collect marks data
+    const marksData = {};
+    document.querySelectorAll('#academic-performance tbody tr').forEach(row => {
+        const subjectId = row.querySelector('td[data-subject-id]').dataset.subjectId;
+        const marks = row.querySelector('span').textContent;
+        const grade = row.querySelector('td:last-child').textContent;
+        marksData[subjectId] = { marks, grade };
+    });
+
+    // Send to server
+    fetch('/save_performance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            student_id: studentId,
+            term,
+            year,
+            marks_data: marksData
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert("Performance saved successfully!");
+            closeSaveModal();
+        } else {
+            alert("Error: " + data.error);
+        }
+    });
+}
+
+        function openEnrollModal() {
+            document.getElementById("enrollModal").style.display = "block";
+        }
+
+        function closeEnrollModal() {
+            document.getElementById("enrollModal").style.display = "none";
+        }
+
+        function toggleSubjectDropdown() {
+            let dropdown = document.getElementById("subject-dropdown");
+            dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+        }
+
+        function selectSubject(subjectId, subjectName) {
+            // Prevent re-enrollment of the same subject
+            if (!selectedSubjects.some(subject => subject.id === subjectId)) {
+                selectedSubjects.push({ id: subjectId, name: subjectName });
+                updateSelectedSubjectsDisplay();
+            }
+        }
+
+        function updateSelectedSubjectsDisplay() {
+            const subjectsListDiv = document.getElementById("selected-subjects-list");
+            subjectsListDiv.innerHTML = ''; // Clear previous list
+
+            selectedSubjects.forEach(subject => {
+                const subjectElement = document.createElement("div");
+                subjectElement.textContent = subject.name;
+                subjectsListDiv.appendChild(subjectElement);
+            });
+
+            // Update hidden input field with selected subject IDs
+            const subjectIds = selectedSubjects.map(subject => subject.id);
+            document.getElementById("selected-subjects").value = subjectIds;
+
+            // Show the enroll form and button when subjects are selected
+            if (selectedSubjects.length > 0) {
+                document.getElementById("enrollment-form").style.display = "block";
+            } else {
+                document.getElementById("enrollment-form").style.display = "none";
+            }
+        }
+
+        // Prevent form submission and use AJAX
+        document.getElementById("enrollment-form").addEventListener("submit", function (e) {
+            e.preventDefault();  // Prevent form submission (page redirect)
+            
+            const formData = new FormData(this);
+            const url = this.action;
+
+            // Send form data using fetch (AJAX)
+            fetch(url, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Student successfully enrolled!");
+                    closeEnrollModal();  // Close the modal on success
+                    // Optionally, you can update the page content or take additional actions here
+                } else {
+                    alert("Enrollment failed!");
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert("An error occurred. Please try again.");
+            });
+        });
+
+        function toggleEditMarks() {
+    editMode = !editMode;
+    const marksCells = document.querySelectorAll('.marks-cell');
+    
+    marksCells.forEach(cell => {
+        const input = cell.querySelector('input');
+        const span = cell.querySelector('span');
+        if (editMode) {
+            cell.classList.add('editable');
+            input.style.display = 'inline-block';  // Show input field
+            span.style.display = 'none';  // Hide the span
+        } else {
+            cell.classList.remove('editable');
+            input.style.display = 'none';  // Hide input field
+            span.style.display = 'inline-block';  // Show span
+            const newMark = input.value.trim();
+            span.textContent = newMark || 'N/A';  // Update the span text
+        }
+    });
+}
+
+// Save marks when input field loses focus (or on change)
+document.querySelectorAll('.marks-input').forEach(input => {
+    input.addEventListener('blur', function() {  
+        const newValue = input.value.trim();
+        const subjectId = input.closest('td').dataset.subjectId;
+        const studentId = document.querySelector('.container').dataset.studentId;
+
+        console.log("📤 Sending Marks Update:", { studentId, subjectId, newValue });
+
+        if (!studentId || !subjectId || newValue === "") {
+            console.error("❌ Missing required values:", { studentId, subjectId, newValue });
+            return;
+        }
+
+        fetch('/update_marks', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                student_id: studentId,
+                subject_id: subjectId,
+                marks: newValue
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                console.log('✅ Marks saved successfully');
+                // Update span after save
+                const span = input.closest('td').querySelector('span');
+                span.textContent = newValue || 'N/A';
+            } else {
+                console.error('❌ Failed to save marks:', data.error);
+                alert('Error saving marks: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('🔥 Error:', error);
+        });
+    });
+});
+
+
+
+    </script>
+</body>
+</html>
