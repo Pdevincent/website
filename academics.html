@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Academics</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background-color: #2c3e50;
+            overflow: hidden;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 16px 24px;
+            font-size: 18px;
+            display: inline-block;
+            margin: 0 10px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .navbar a:hover, .navbar a.active {
+            background-color: #1a252f;
+            border-radius: 5px;
+        }
+
+        /* Container */
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            color: #2c3e50;
+        }
+
+        /* Card-style buttons */
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 40px;
+        }
+
+        .card {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 200px;
+            text-align: center;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .card:hover {
+            background-color: #1a252f;
+            transform: scale(1.05);
+        }
+
+        .card h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+
+        /* Modal Content */
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 10px;
+        }
+
+        /* Close Button */
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: black;
+        }
+
+        /* Form Styles */
+        label {
+            font-size: 16px;
+            color: #333;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0 20px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        button[type="submit"] {
+            background-color: #2c3e50;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #1a252f;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Menu -->
+    <div class="navbar">
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('student_data') }}">Student Data</a>
+        <a href="{{ url_for('academics') }}" class="active">Academics</a>
+        <a href="{{ url_for('finance') }}">Finance</a>
+        <a href="{{ url_for('user') }}">User</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h1>Academics Management</h1>
+
+        <!-- Card-style buttons -->
+        <div class="card-container">
+            <div class="card" onclick="openClassModal()">
+                <h3>Create Class</h3>
+            </div>
+            <div class="card" onclick="openSubjectModal()">
+                <h3>Create Subject</h3>
+            </div>
+            
+            <a href="{{ url_for('view_classes') }}" class="card">
+                <h3>View Class</h3>
+            </a>
+            <a href="{{ url_for('report_cards') }}" class="card">
+                <h3>Report Card</h3>
+            </a>
+            <a href="javascript:void(0);" class="card" onclick="openGradeModal()">
+                <h3>Set Grades</h3>
+            </a>
+
+        </div>
+    </div>
+
+    <!-- Create Class Modal -->
+    <div id="classModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeClassModal()">&times;</span>
+            <h2>Create Class</h2>
+            <form action="{{ url_for('create_class') }}" method="POST">
+                <label for="class_name">Class Name</label>
+                <input type="text" id="class_name" name="class_name" required>
+
+                <label for="level">Level</label>
+                <input type="text" id="level" name="level" required>
+
+                <button type="submit">Create Class</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Create Subject Modal -->
+    <div id="subjectModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeSubjectModal()">&times;</span>
+            <h2>Create Subject</h2>
+            <form action="{{ url_for('create_subject') }}" method="POST">
+                <label for="subject_name">Subject Name</label>
+                <input type="text" id="subject_name" name="subject_name" required>
+
+                <label for="paper">Paper</label>
+                <input type="text" id="paper" name="paper" required>
+
+                <button type="submit">Create Subject</button>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        function openClassModal() {
+            document.getElementById('classModal').style.display = 'block';
+        }
+
+        function closeClassModal() {
+            document.getElementById('classModal').style.display = 'none';
+        }
+
+        function openSubjectModal() {
+            document.getElementById('subjectModal').style.display = 'block';
+        }
+
+        function closeSubjectModal() {
+            document.getElementById('subjectModal').style.display = 'none';
+        }
+
+        function openGradeModal() {
+            document.getElementById('gradeModal').style.display = 'block';
+        }
+
+        function closeGradeModal() {
+            document.getElementById('gradeModal').style.display = 'none';
+        }
+    </script>
+    <!-- Set Grades Modal -->
+    <!-- Set Grades Modal -->
+<div id="gradeModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeGradeModal()">&times;</span>
+        <h2>Set Custom Grade Boundaries</h2>
+        <form id="gradeForm" action="{{ url_for('set_grades') }}" method="POST">
+            <label for="level">Level</label>
+            <select id="level" name="level" required>
+                {% for level in levels %}
+                    <option value="{{ level }}">{{ level }}</option>
+                {% endfor %}
+
+                <!-- Debugging: Check if levels are being passed -->
+                {% if levels %}
+                <p>Levels found: {{ levels }}</p>
+                {% else %}
+                <p>No levels found!</p>
+                {% endif %}
+            </select>
+
+            <div id="gradeInputs">
+                <div class="grade-input">
+                    <label for="grade_name_1">Grade Name</label>
+                    <input type="text" id="grade_name_1" name="grade_name[]" required>
+
+                    <label for="grade_marks_1">Minimum Marks</label>
+                    <input type="number" id="grade_marks_1" name="grade_marks[]" min="0" max="100" required>
+                </div>
+            </div>
+            <button type="button" onclick="addGradeField()">Add Grade</button>
+            <button type="submit">Save Grade Boundaries</button>
+        </form>
+    </div>
+</div>
+
+<script>
+    let gradeCount = 1;
+
+    // Function to add new grade input fields
+    function addGradeField() {
+        gradeCount++;
+        const gradeInputs = document.getElementById('gradeInputs');
+        const newGradeInput = document.createElement('div');
+        newGradeInput.classList.add('grade-input');
+        newGradeInput.innerHTML = `
+            <label for="grade_name_${gradeCount}">Grade Name</label>
+            <input type="text" id="grade_name_${gradeCount}" name="grade_name[]" required>
+
+            <label for="grade_marks_${gradeCount}">Minimum Marks</label>
+            <input type="number" id="grade_marks_${gradeCount}" name="grade_marks[]" min="0" max="100" required>
+        `;
+        gradeInputs.appendChild(newGradeInput);
+    }
+
+    // Open the modal
+    function openGradeModal() {
+        document.getElementById('gradeModal').style.display = 'block';
+    }
+
+    // Close the modal
+    function closeGradeModal() {
+        document.getElementById('gradeModal').style.display = 'none';
+    }
+</script>
+
+
+</body>
+</html>

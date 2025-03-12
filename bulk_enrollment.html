@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Bulk Enrollment - {{ class_name }}</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background-color: #2c3e50;
+            overflow: hidden;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 16px 24px;
+            font-size: 18px;
+            display: inline-block;
+            margin: 0 10px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .navbar a:hover, .navbar a.active {
+            background-color: #1a252f;
+            border-radius: 5px;
+        }
+
+        /* Container */
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #34495e;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        /* Table Styling */
+        .student-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+
+        .student-table th, .student-table td {
+            padding: 12px 20px;
+            text-align: left;
+            border: 1px solid #ddd;
+            font-size: 16px;
+        }
+
+        .student-table th {
+            background-color: #2c3e50;
+            color: white;
+            font-weight: bold;
+        }
+
+        .student-table tr:nth-child(even) {
+            background-color: #ecf0f1;
+        }
+
+        .student-table td input[type="checkbox"] {
+            accent-color: #3498db;
+        }
+
+        /* Section Styles */
+        .selection-section {
+            margin-bottom: 30px;
+        }
+
+        .checkbox-group {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #ecf0f1;
+            border-radius: 5px;
+        }
+
+        .checkbox-group label {
+            font-size: 16px;
+            color: #2c3e50;
+        }
+
+        /* Button Styles */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s ease-in-out;
+        }
+
+        .btn-blue {
+            background-color: #3498db;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, background-color 0.3s ease-in-out, box-shadow 0.3s;
+        }
+
+        .btn-blue:hover {
+            background-color: #2980b9;
+            transform: scale(1.05); /* Slightly enlarge on hover */
+            box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2); /* Enhanced shadow */
+        }
+
+        .btn-blue:active {
+            transform: scale(1); /* Reset scale on click */
+            background-color: #21618c; /* Darker color on active click */
+        }
+
+        #enrollBtn {
+            display: none;
+            margin-top: 20px;
+            width: 250px;
+            padding: 12px 18px;
+            margin: 0 auto;
+            text-align: center;
+            background-color: #2ecc71;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 5px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        #enrollBtn:hover {
+            background-color: #27ae60;
+            transform: scale(1.05); /* Slightly enlarge on hover */
+            box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.2); /* Enhanced shadow */
+        }
+
+        #enrollBtn:active {
+            transform: scale(1); /* Reset scale on click */
+            background-color: #1e8449; /* Darker color on active click */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="navbar">
+        <!-- Reuse your navigation bar from class_students.html -->
+    </div>
+
+    <div class="container">
+        <h1>Bulk Enrollment for {{ class_name }}</h1>
+
+        <div class="selection-section">
+            <h2 style="color: #34495e; font-size: 22px;">Select Students</h2>
+
+            <!-- Table to Display Students -->
+            <table class="student-table">
+                <thead>
+                    <tr>
+                        <!-- Add Select All checkbox in header -->
+                        <th><input type="checkbox" id="select-all" onclick="toggleSelectAll()"></th>
+                        <th>Student Name</th>
+                        <th>Student ID</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td><input type="checkbox" name="students" value="{{ student[0] }}" class="student-checkbox"></td>
+                        <td>{{ student[1] }} {{ student[2] }}</td>
+                        <td>{{ student[0] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="selection-section">
+            <h2 style="color: #34495e; font-size: 22px;">Select Subjects</h2>
+            <div class="checkbox-group grid">
+                {% for subject in subjects %}
+                <label>
+                    <input type="checkbox" name="subjects" value="{{ subject[0] }}">
+                    {{ subject[1] }}
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+
+        <button id="enrollBtn" class="btn btn-blue" onclick="submitEnrollment()">Enroll Selected</button>
+    </div>
+
+    <script>
+        function toggleSelectAll() {
+            const selectAllCheckbox = document.getElementById('select-all');
+            const studentCheckboxes = document.querySelectorAll('.student-checkbox');
+            studentCheckboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+            updateEnrollButton(); // Ensure the "Enroll Selected" button visibility is updated
+        }
+
+        function updateEnrollButton() {
+            const studentsSelected = document.querySelectorAll('input[name="students"]:checked').length > 0;
+            const subjectsSelected = document.querySelectorAll('input[name="subjects"]:checked').length > 0;
+            document.getElementById('enrollBtn').style.display = (studentsSelected && subjectsSelected) ? 'block' : 'none';
+        }
+
+        // Attach event listeners to all checkboxes
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', updateEnrollButton);
+        });
+
+        function submitEnrollment() {
+            const studentIds = Array.from(document.querySelectorAll('input[name="students"]:checked'))
+                                .map(cb => cb.value);
+            const subjectIds = Array.from(document.querySelectorAll('input[name="subjects"]:checked'))
+                                .map(cb => cb.value);
+
+            fetch('/enroll_bulk', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    class_name: "{{ class_name }}",
+                    student_ids: studentIds,
+                    subject_ids: subjectIds
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Enrollment successful!');
+                    window.location.href = `/class_students/${encodeURIComponent("{{ class_name }}")}`;
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            });
+        }
+    </script>
+</body>
+</html>

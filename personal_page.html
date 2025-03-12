@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ student[1] }} {{ student[2] }} Details</title>
+    <style>
+        /* Add your existing styles here */
+        .section-box {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .marks-table {
+            width: 100%;
+            margin-top: 10px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <!-- Your existing navigation links -->
+    </div>
+
+    <div class="container">
+        <h1>{{ student[1] }} {{ student[2] }} ({{ student[12] }})</h1>
+        
+        <!-- Enrollment Section -->
+        <div class="section-box">
+            <h2>Subject Enrollment</h2>
+            <form action="/enroll_student/{{ student[0] }}" method="POST">
+                <select id="subject" name="subject_id" required>
+                    <option value="" disabled selected>Select Subject</option>
+                    {% for subject in subjects %}
+                        <option value="{{ subject.id }}">{{ subject.name }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-green">Enroll in Subject</button>
+            </form>
+        </div>
+
+        <!-- Marks Entry Section -->
+        <div class="section-box">
+            <h2>Enter/Update Marks</h2>
+            <form action="/enter_marks/{{ student[0] }}" method="POST">
+                <select name="subject_id" required>
+                    {% for subject in enrolled_subjects %}
+                    <option value="{{ subject[0] }}">{{ subject[1] }}</option>
+                    {% endfor %}
+                </select>
+                <input type="number" name="marks" min="0" max="100" required>
+                <button type="submit" class="btn btn-blue">Save Marks</button>
+            </form>
+            
+            <h3>Current Marks</h3>
+            <table class="marks-table">
+                <tr>
+                    <th>Subject</th>
+                    <th>Marks</th>
+                </tr>
+                {% for subject in enrolled_subjects %}
+                <tr>
+                    <td>{{ subject[1] }}</td>
+                    <td>{{ subject[2] }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <!-- Promotion Section -->
+        <div class="section-box">
+            <h2>Student Promotion</h2>
+            <form action="/promote_student/{{ student[0] }}" method="POST">
+                <p>Current Class: {{ student[12] }}</p>
+                <button type="submit" class="btn btn-red">Promote to Next Class</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Student</title>
+    <style>
+        /* Add some basic styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        .button-group {
+            text-align: center;
+        }
+
+        .submit-button {
+            padding: 12px 20px;
+            background: #2c3e50;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            margin-right: 10px;
+            transition: 0.3s;
+        }
+
+        .submit-button:hover {
+            background: #1a252f;
+            transform: scale(1.05);
+        }
+
+        .back-button {
+            padding: 12px 20px;
+            background: #bdc3c7;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .back-button:hover {
+            background: #95a5a6;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Edit Student</h1>
+
+        <form method="POST">
+            <div class="form-group">
+                <label for="first_name">First Name</label>
+                <input type="text" id="first_name" name="first_name" value="{{ student[1] }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="last_name">Last Name</label>
+                <input type="text" id="last_name" name="last_name" value="{{ student[2] }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="dob">Date of Birth</label>
+                <input type="text" id="dob" name="dob" value="{{ student[3] }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="age">Age</label>
+                <input type="number" id="age" name="age" value="{{ student[4] }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="religion">Religion</label>
+                <input type="text" id="religion" name="religion" value="{{ student[5] }}">
+            </div>
+
+            <div class="form-group">
+                <label for="next_of_kin">Next of Kin</label>
+                <input type="text" id="next_of_kin" name="next_of_kin" value="{{ student[6] }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="relationship">Relationship</label>
+                <input type="text" id="relationship" name="relationship" value="{{ student[7] }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="contact">Contact</label>
+                <input type="text" id="contact" name="contact" value="{{ student[8] }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="level">Level</label>
+                <input type="text" id="level" name="level" value="{{ student[9] }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="student_class">Class</label>
+                <input type="text" id="student_class" name="student_class" value="{{ student[10] }}" required>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="submit-button">Save Changes</button>
+                <a href="{{ url_for('view_student', id=student[0]) }}" class="back-button">Back to Student</a>
+            </div>
+        </form>
+    </div>
+
+</body>
+</html>

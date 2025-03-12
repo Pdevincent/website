@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Student Data</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background-color: #2c3e50;
+            overflow: hidden;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 16px 24px;
+            font-size: 18px;
+            display: inline-block;
+            margin: 0 10px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .navbar a:hover, .navbar a.active {
+            background-color: #1a252f;
+            border-radius: 5px;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        /* Stats Section */
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .stats div {
+            font-size: 20px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        /* Class Cards */
+        .class-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .class-card {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            width: 250px;
+            text-align: center;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+
+        .class-card:hover {
+            transform: scale(1.05);
+        }
+
+        .class-card h2 {
+            margin: 0;
+            color: #2c3e50;
+        }
+
+        /* Search Bar */
+        #searchBar {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Menu -->
+    <div class="navbar">
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('student_data') }}" class="active">Student Data</a>
+        <a href="{{ url_for('academics') }}">Academics</a>
+        <a href="{{ url_for('finance') }}">Finance</a>
+        <a href="{{ url_for('user') }}">User</a>
+        <a href="{{ url_for('add_student') }}" class="add-student-button">Add New Student</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h1>Available Classes</h1>
+
+        <!-- Student Statistics -->
+        <div class="stats">
+            <div>Total Students: <span>{{ total_students }}</span></div>
+            <div>Male: <span>{{ male_students }}</span></div>
+            <div>Female: <span>{{ female_students }}</span></div>
+        </div>
+
+        <!-- Search Bar -->
+        <input type="text" id="searchBar" onkeyup="filterClasses()" placeholder="Search for a class...">
+
+        <!-- Display Class Cards with Student Count -->
+        <div class="class-list">
+            {% for class_name, student_count in classes %}
+            <div class="class-card" onclick="window.location.href='{{ url_for('class_students', class_name=class_name) }}'">
+                <h2>{{ class_name }}</h2>
+                <p>Students: {{ student_count }}</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Gender Distribution Chart -->
+        <div class="chart-container">
+            <canvas id="genderChart" width="250" height="250"></canvas>
+        </div>
+
+    </div>
+
+    <!-- JavaScript Section -->
+    <script>
+        // Search Functionality for Classes
+        function filterClasses() {
+            let input = document.getElementById("searchBar").value.toUpperCase();
+            let cards = document.querySelectorAll(".class-card");
+
+            cards.forEach(card => {
+                let title = card.querySelector("h2").textContent.toUpperCase();
+                card.style.display = title.includes(input) ? "" : "none";
+            });
+        }
+    </script>
+
+    <!-- Include Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Render Gender Distribution Pie Chart -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const ctx = document.getElementById('genderChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Male', 'Female'],
+                    datasets: [{
+                        data: [{{ male_students | tojson }}, {{ female_students | tojson }}],
+                        backgroundColor: ['#3498db', '#e74c3c']
+                    }]
+                },
+                options: {
+                    responsive: false,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                font: { size: 12 }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+
+<script>
+    function enrollSubject(studentId) {
+        let subjectId = document.getElementById("subjectDropdown").value;
+
+        fetch(`/enroll_student/${studentId}`, {
+            method: "POST",
+            body: new URLSearchParams({ subject_id: subjectId }),
+            headers: { "Content-Type": "application/x-www-form-urlencoded" }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update the enrolled subjects list dynamically
+                let subjectList = document.getElementById("enrolledSubjectsList");
+                subjectList.innerHTML = "";
+                data.enrolled_subjects.forEach(subject => {
+                    let li = document.createElement("li");
+                    li.textContent = subject;
+                    subjectList.appendChild(li);
+                });
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    }
+</script>
+
+
+</body>
+</html>

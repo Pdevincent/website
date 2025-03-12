@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Add Student</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        /* Navigation Bar */
+        .navbar {
+            background-color: #2c3e50;
+            overflow: hidden;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 16px 24px;
+            font-size: 18px;
+            display: inline-block;
+            margin: 0 10px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .navbar a:hover, .navbar a.active {
+            background-color: #1a252f;
+            border-radius: 5px;
+        }
+
+        /* Container for Form */
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        /* Form Styling */
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        input[type="text"], input[type="date"], input[type="number"], input[type="tel"], select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            margin-top: 20px;
+            background-color: #3498db;
+            color: white;
+            font-size: 18px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 16px;
+            text-decoration: none;
+            color: #3498db;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 15px; /* Adjust spacing between options */
+            margin-top: 5px;
+        }
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 5px; /* Space between the radio button and text */
+            font-size: 16px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Menu -->
+    <div class="navbar">
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('student_data') }}">Student Data</a>
+        <a href="{{ url_for('academics') }}">Academics</a>
+        <a href="{{ url_for('finance') }}">Finance</a>
+        <a href="{{ url_for('user') }}">User</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h2>Add Student</h2>
+
+        <!-- Add student form -->
+        
+            
+        
+
+        <form method="POST" action="{{ url_for('add_student') }}">
+            <label>First Name:</label>
+            <input type="text" name="first_name" required>
+
+            <label>Last Name:</label>
+            <input type="text" name="last_name" required>
+
+            <label>Date of Birth:</label>
+            <input type="date" name="dob" required>
+
+            <label>Age:</label>
+            <input type="number" name="age" required>
+
+            <label>Gender:</label>
+            <select name="gender" required>
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+            </select>
+
+            <label>Disabled:</label>
+                <div class="radio-group">
+                    <label><input type="radio" name="disabled" value="Yes" required> Yes</label>
+                    <label><input type="radio" name="disabled" value="No" required> No</label>
+                </div>
+
+            <label>Religion:</label>
+            <select name="religion" required>
+                <option value="">Select Religion</option>
+                <option value="Christianity">Catholic</option>
+                <option value="Islam">Islam</option>
+                <option value="Hinduism">Born Again</option>
+                <option value="Buddhism">Jehovah Withness</option>
+                <option value="Judaism">Seventh Day Adventist</option>
+                <option value="Other">Other</option>
+            </select>
+
+            <label>Next of Kin:</label>
+            <input type="text" name="next_of_kin" required>
+
+            <label>Relationship:</label>
+            <input type="text" name="relationship" required>
+
+            <label>Contact:</label>
+            <input type="tel" name="contact" required>
+
+            <label>Level:</label>
+            <select name="level">
+                <option value="">Select Level</option>
+                {% for level in levels %}
+                    <option value="{{ level[0] }}">{{ level[0] }}</option>
+                {% endfor %}
+            </select>
+
+            <label>Class:</label>
+            <select name="student_class" required>
+                <option value="">Select Class</option>
+                {% for student_class in classes %}
+                    <option value="{{ student_class[0] }}">{{ student_class[0] }}</option>
+                {% endfor %}
+            </select>
+
+
+            
+
+            <button type="submit">Submit</button>
+        </form>
+        <a href="{{ url_for('index') }}" class="back-link">Back to Student List</a>
+    </div>
+
+</body>
+</html>

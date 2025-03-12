@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Finance</title>
+    <style>
+        /* Add styles here as needed */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .navbar {
+            background-color: #2c3e50;
+            overflow: hidden;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 16px 24px;
+            font-size: 18px;
+            display: inline-block;
+            margin: 0 10px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .navbar a:hover, .navbar a.active {
+            background-color: #1a252f;
+            border-radius: 5px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        /* Card-style buttons */
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px; /* Adds space between cards */
+            margin-top: 40px;
+        }
+        .card {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 200px;
+            text-align: center;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .card:hover {
+            background-color: #1a252f;
+            transform: scale(1.05);
+        }
+        .card h3 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 50%;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding-right: -2cm;
+        }
+
+        button[type="submit"] {
+            background-color: #2c3e50;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button[type="submit"]:hover {
+            background-color: #1a252f;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        .class-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 20px;
+        }
+
+        .class-button {
+            padding: 10px 20px;
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .class-button:hover {
+            background-color: #1a252f;
+            transform: scale(1.05);
+        }
+
+        .defaulter-table {
+            width: 100%;
+            margin-top: 20px;
+            display: none; /* Hidden by default */
+        }
+
+        .defaulter-table.active {
+            display: table; /* Show when active */
+        }
+
+        #fee-adjustment-form textarea {
+            width: 100%;
+            height: 80px;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: vertical;
+        }
+
+        #feeAdjustmentModal select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+<body>
+
+    <div class="navbar">
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('student_data') }}">Student Data</a>
+        <a href="{{ url_for('academics') }}">Academics</a>
+        <a href="{{ url_for('finance') }}" class="active">Finance</a>
+        <a href="{{ url_for('user') }}">User</a>
+    </div>
+
+    <div class="container">
+        <h1>Finance Data</h1>
+
+        <div class="card-container">
+            <a href="{{ url_for('set_fee_structure') }}" class="card">
+                <h3>Fee Structure</h3>
+            </a>
+            <a href="{{ url_for('create_requirements') }}" class="card">
+                <h3>Requirements</h3>
+            </a>
+            <!-- Pay Fees Card (Trigger Modal) -->
+            <div class="card" onclick="openModal()">
+                <h3>Pay Fees</h3>
+            </div>
+            <!-- Payment History Card (Trigger Modal) -->
+            <div class="card" onclick="openPaymentHistoryModal()">
+                <h3>Payment History</h3>
+            </div>
+            <!-- Fees Defaulters Card (Trigger Modal) -->
+            <div class="card" onclick="openFeesDefaultersModal()">
+                <h3>Fees Defaulters</h3>
+            </div>
+            <div class="card"><h3>Pending Payments</h3></div>
+            <div class="card"><h3>Scholarships & Bursaries</h3></div>
+            <div class="card"><h3>Generate Invoice</h3></div>
+            <div class="card"><h3>Expense Tracking</h3></div>
+            <div class="card" onclick="openFeeAdjustmentModal()">
+                <h3>Fee Adjustments</h3>
+            </div>
+        </div>
+        
+    </div>
+
+    <!-- Modal for Paying Fees -->
+    <div id="payFeesModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2>Enter Fee Payment Details</h2>
+            <form method="POST" action="{{ url_for('submit_fee_payment') }}">
+                <label for="student_id">Student ID</label>
+                <input type="text" id="student_id" name="student_id" oninput="fetchStudentName()"><br>
+                
+                <label for="student_name">Student Name</label>
+                <input type="text" id="student_name" name="student_name" readonly><br>
+
+                <label for="student_class">Student Class</label>
+                <input type="text" id="student_class" name="student_class" readonly><br>
+
+                <label for="amount_paid">Amount Paid</label>
+                <input type="text" name="amount_paid" required><br>
+            
+                <label for="term">Term</label>
+                <select name="term" id="term" required>
+                    <option value="" disabled selected>Select Term</option>
+                    <option value="Term 1">Term 1</option>
+                    <option value="Term 2">Term 2</option>
+                    <option value="Term 3">Term 3</option>
+                </select><br>
+            
+                <label for="year">Year</label>
+                <input type="text" name="year" required><br>
+            
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Payment History -->
+    <div id="paymentHistoryModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closePaymentHistoryModal()">&times;</span>
+            <h2>View Payment History</h2>
+            <form id="payment-history-form" onsubmit="fetchPaymentHistory(event)">
+                <label for="history_student_id">Student ID</label>
+                <input type="text" id="history_student_id" name="student_id" required><br>
+                <button type="submit">Get Payment History</button>
+            </form>
+
+            <h3>Student: <span id="student_name_display"></span></h3>
+            <h3>Class: <span id="student_class_display"></span></h3>
+            <h3 id="fee_balance">Fee Balance: </h3>
+
+            <table id="payment-history-table">
+                <thead>
+                    <tr>
+                        <th>Payment Date</th>
+                        <th>Term</th>
+                        <th>Year</th>
+                        <th>Amount Paid</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Data will be inserted here -->
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+    <!-- Modal for Fees Defaulters -->
+    <div id="feesDefaultersModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeFeesDefaultersModal()">&times;</span>
+            <h2>Fees Defaulters</h2>
+            <div id="fees-defaulters-content">
+                <!-- Class buttons will be inserted here -->
+                <div class="class-buttons"></div>
+                <!-- Tables will be inserted here -->
+                <div id="defaulter-tables"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Fee Adjustments -->
+<div id="feeAdjustmentModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeFeeAdjustmentModal()">&times;</span>
+        <h2>Adjust Student Fees</h2>
+        <form id="fee-adjustment-form" onsubmit="submitFeeAdjustment(event)">
+            <label for="adjust_student_id">Student ID</label>
+            <input type="text" id="adjust_student_id" name="student_id" required oninput="fetchAdjustmentStudent()"><br>
+            
+            <label for="adjust_student_name">Student Name</label>
+            <input type="text" id="adjust_student_name" readonly><br>
+
+            <label for="adjust_student_class">Student Class</label>
+            <input type="text" id="adjust_student_class" readonly><br>
+
+            <label for="adjustment_type">Adjustment Type</label>
+            <select id="adjustment_type" required>
+                <option value="add">Add to Fees</option>
+                <option value="reduce">Reduce Fees</option>
+            </select><br>
+
+            <label for="adjustment_amount">Amount</label>
+            <input type="number" id="adjustment_amount" required><br>
+
+            <label for="adjustment_term">Term</label>
+            <select id="adjustment_term" required>
+                <option value="Term 1">Term 1</option>
+                <option value="Term 2">Term 2</option>
+                <option value="Term 3">Term 3</option>
+            </select><br>
+
+            <label for="adjustment_year">Year</label>
+            <input type="number" id="adjustment_year" required><br>
+
+            <label for="adjustment_reason">Reason</label>
+            <textarea id="adjustment_reason" required></textarea><br>
+
+            <button type="submit">Apply Adjustment</button>
+        </form>
+    </div>
+</div>
+
+    <script>
+        // Open the modal for Paying Fees
+        function openModal() {
+            document.getElementById('payFeesModal').style.display = 'block';
+        }
+
+        // Close the modal for Paying Fees
+        function closeModal() {
+            document.getElementById('payFeesModal').style.display = 'none';
+        }
+
+        // Open the modal for Payment History
+        function openPaymentHistoryModal() {
+            document.getElementById('paymentHistoryModal').style.display = 'block';
+        }
+
+        // Close the modal for Payment History
+        function closePaymentHistoryModal() {
+            document.getElementById('paymentHistoryModal').style.display = 'none';
+        }
+
+        // Open the modal for Fees Defaulters
+        function openFeesDefaultersModal() {
+            document.getElementById('feesDefaultersModal').style.display = 'block';
+            fetchFeesDefaulters(); // Fetch defaulters data when modal opens
+        }
+
+        // Close the modal for Fees Defaulters
+        function closeFeesDefaultersModal() {
+            document.getElementById('feesDefaultersModal').style.display = 'none';
+        }
+
+        // Fetch student name and class based on student ID
+        let debounceTimeout;
+        function fetchStudentName() {
+            var studentId = document.getElementById('student_id').value;
+            clearTimeout(debounceTimeout);
+
+            if (studentId.length === 10) {
+                debounceTimeout = setTimeout(function() {
+                    fetch(`/get_student_name?student_id=${studentId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.name && data.class) {
+                                document.getElementById('student_name').value = data.name;
+                                document.getElementById('student_class').value = data.class;
+                            } else {
+                                document.getElementById('student_name').value = '';
+                                document.getElementById('student_class').value = '';
+                                alert('Student not found');
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                }, 300);
+            } else {
+                document.getElementById('student_name').value = '';
+                document.getElementById('student_class').value = '';
+            }
+        }
+
+        // Fetch payment history based on student ID
+        function fetchPaymentHistory(event) {
+    event.preventDefault();
+    let studentId = document.getElementById('history_student_id').value;
+    fetch(`/get_payment_history?student_id=${studentId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Display student name and class
+                document.getElementById('student_name_display').innerText = data.student_name;
+                document.getElementById('student_class_display').innerText = data.student_class;
+
+                // Update table content
+                let tableBody = document.querySelector("#payment-history-table tbody");
+                tableBody.innerHTML = '';
+                data.payment_history.forEach(payment => {
+                    let row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${payment.payment_date}</td>
+                        <td>${payment.term}</td>
+                        <td>${payment.year}</td>
+                        <td>${payment.amount_paid}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+
+                // Display fee balance
+                document.getElementById('fee_balance').innerText = `Fee Balance: ${data.fee_balance}`;
+            } else {
+                alert("No payment history found for this student.");
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+// Fee Adjustments Modal Functions
+function openFeeAdjustmentModal() {
+    document.getElementById('feeAdjustmentModal').style.display = 'block';
+}
+
+function closeFeeAdjustmentModal() {
+    document.getElementById('feeAdjustmentModal').style.display = 'none';
+}
+
+function fetchAdjustmentStudent() {
+    const studentId = document.getElementById('adjust_student_id').value;
+    if (studentId.length === 10) {
+        fetch(`/get_student_name?student_id=${studentId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.name && data.class) {
+                    document.getElementById('adjust_student_name').value = data.name;
+                    document.getElementById('adjust_student_class').value = data.class;
+                } else {
+                    alert('Student not found');
+                }
+            });
+    }
+}
+
+function submitFeeAdjustment(event) {
+    event.preventDefault();
+    
+    const adjustmentData = {
+        student_id: document.getElementById('adjust_student_id').value,
+        amount: document.getElementById('adjustment_amount').value,
+        type: document.getElementById('adjustment_type').value,
+        term: document.getElementById('adjustment_term').value,
+        year: document.getElementById('adjustment_year').value,
+        reason: document.getElementById('adjustment_reason').value
+    };
+
+    fetch('/adjust_fees', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(adjustmentData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Fee adjustment applied successfully!');
+            closeFeeAdjustmentModal();
+        } else {
+            alert('Error: ' + data.error);
+        }
+    })
+    .catch(error => console.error('Error:', error));
+}
+
+
+function fetchFeesDefaulters() {
+    fetch('/get_fees_defaulters')
+        .then(response => response.json())
+        .then(data => {
+            const contentDiv = document.getElementById('fees-defaulters-content');
+            contentDiv.innerHTML = `
+                <div class="class-buttons"></div>
+                <div id="defaulter-tables"></div>
+                <canvas id="defaulter-chart" width="400" height="200"></canvas>
+            `;
+
+            const buttonsContainer = contentDiv.querySelector('.class-buttons');
+            const tablesContainer = contentDiv.querySelector('#defaulter-tables');
+            const chartContainer = document.getElementById('defaulter-chart');
+
+            if (data.classes && data.classes.length > 0) {
+                // Create the buttons for classes
+                data.classes.forEach(cls => {
+                    const btn = document.createElement('button');
+                    btn.className = 'class-button';
+                    btn.textContent = cls.name;
+                    btn.onclick = () => toggleClassTable(cls, tablesContainer, chartContainer);
+                    buttonsContainer.appendChild(btn);
+                });
+
+                // Immediately render the graph showing total number of defaulters per class
+                updateDefaulterChart(data.classes);
+
+            } else {
+                tablesContainer.innerHTML = '<p>No fees defaulters found.</p>';
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+function fetchFeesDefaulters() {
+    fetch('/get_fees_defaulters')
+        .then(response => response.json())
+        .then(data => {
+            const contentDiv = document.getElementById('fees-defaulters-content');
+            contentDiv.innerHTML = `
+                <div class="class-buttons"></div>
+                <div id="defaulter-tables"></div>
+                <canvas id="defaulter-chart" width="400" height="200"></canvas>
+            `;
+
+            const buttonsContainer = contentDiv.querySelector('.class-buttons');
+            const tablesContainer = contentDiv.querySelector('#defaulter-tables');
+            const chartContainer = document.getElementById('defaulter-chart');
+
+            if (data.classes && data.classes.length > 0) {
+                // Create the buttons for classes
+                data.classes.forEach(cls => {
+                    const btn = document.createElement('button');
+                    btn.className = 'class-button';
+                    btn.textContent = cls.name;
+                    btn.onclick = () => toggleClassTable(cls, tablesContainer, chartContainer);
+                    buttonsContainer.appendChild(btn);
+                });
+
+                // Immediately render the graph showing total number of defaulters per class
+                updateDefaulterChart(data.classes);
+
+            } else {
+                tablesContainer.innerHTML = '<p>No fees defaulters found.</p>';
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+function toggleClassTable(cls, container, chartContainer) {
+    // Remove existing tables
+    container.innerHTML = '';
+
+    // Hide the graph when a class is selected
+    chartContainer.style.display = 'none';
+
+    // Create the export button and place it above the table
+    const exportButton = document.createElement('button');
+    exportButton.textContent = `Export Defaulters List for ${cls.name}`;
+    exportButton.onclick = () => exportDefaulters(cls);
+    container.appendChild(exportButton);
+
+    // Create new table for the selected class
+    const table = document.createElement('table');
+    table.className = 'defaulter-table active';
+    table.innerHTML = `
+        <thead>
+            <tr>
+                <th>Student ID</th>
+                <th>Student Name</th>
+                <th>Amount Due</th>
+            </tr>
+        </thead>
+        <tbody>
+    `;
+
+    cls.defaulters.forEach(defaulter => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${defaulter.student_id}</td>
+            <td>${defaulter.name}</td>
+            <td>Ugx${defaulter.amount_due}</td>
+        `;
+        table.querySelector('tbody').appendChild(row);
+    });
+
+    container.appendChild(table);
+}
+
+function updateDefaulterChart(classes) {
+    // Prepare the data for the graph: Total number of defaulters per class
+    const classNames = classes.map(cls => cls.name);
+    const defaulterCounts = classes.map(cls => cls.defaulters.length); // Count defaulters per class
+
+    // Update chart
+    const ctx = document.getElementById('defaulter-chart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: classNames,
+            datasets: [{
+                label: 'Number of Defaulters',
+                data: defaulterCounts,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}
+
+function exportDefaulters(cls) {
+    // Create the title row with merged columns
+    const csvContent = [
+        [`Class: ${cls.name}`, '', ''], // Merge three columns for the class name title
+        ['Student ID', 'Student Name', 'Amount Due'],
+        ...cls.defaulters.map(defaulter => [
+            defaulter.student_id,
+            defaulter.name,
+            defaulter.amount_due
+        ])
+    ]
+    .map(row => row.join(','))
+    .join('\n');
+
+    // Create a Blob from the CSV data and create a download link
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${cls.name}_fees_defaulters.csv`; // Name the file with the class name
+    link.click();
+
+    // Revoke the object URL after the download
+    URL.revokeObjectURL(url);
+}
+
+</script>
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Institution Setup</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .navbar {
+            background-color: #2c3e50;
+            overflow: hidden;
+            padding: 15px;
+            display: flex;
+            justify-content: center;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 16px 24px;
+            font-size: 18px;
+            display: inline-block;
+            margin: 0 10px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .navbar a:hover, .navbar a.active {
+            background-color: #1a252f;
+            border-radius: 5px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        label {
+            font-size: 16px;
+            color: #333;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        input[type="file"] {
+            margin-top: 10px;
+        }
+
+        /* Logo Container */
+        .logo-container {
+            width: 200px;
+            height: 200px;
+            border: 2px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 10px;
+            overflow: hidden;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            position: relative;
+        }
+
+        .logo-container img {
+            max-width: 100%;
+            max-height: 100%;
+            display: block;
+            object-fit: contain;
+        }
+
+        .logo-placeholder {
+            font-size: 14px;
+            color: #888;
+            text-align: center;
+        }
+
+        button[type="submit"] {
+            background-color: #2c3e50;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #1a252f;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Menu -->
+    <div class="navbar">
+        <a href="{{ url_for('index') }}">Home</a>
+        <a href="{{ url_for('student_data') }}">Student Data</a>
+        <a href="{{ url_for('academics') }}">Academics</a>
+        <a href="{{ url_for('finance') }}">Finance</a>
+        <a href="{{ url_for('user') }}">User</a>
+        <a href="{{ url_for('add_student') }}" class="add-student-button">Add New Student</a>
+        <a href="{{ url_for('institution') }}" class="active">Institution</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h1>Institution Setup</h1>
+
+        <form method="POST" enctype="multipart/form-data">
+            <label for="school_name">School Name:</label>
+            <input type="text" id="school_name" name="school_name" value="{{ institution[0] if institution else '' }}" required>
+
+            <label for="logo">School Logo:</label>
+            <input type="file" id="logo" name="logo" accept="image/*" onchange="previewLogo(event)">
+
+            <!-- Logo Preview Area -->
+            <div class="logo-container" id="logoPreviewContainer">
+                {% if institution and institution[1] %}
+                    <img id="logoPreview" src="{{ url_for('static', filename='uploads/' + institution[1]) }}" alt="School Logo">
+                {% else %}
+                    <span class="logo-placeholder">No Logo Uploaded</span>
+                {% endif %}
+            </div>
+
+            <label for="contact_info">Contact Information:</label>
+            <textarea id="contact_info" name="contact_info" rows="4" required>{{ institution[2] if institution else '' }}</textarea>
+
+            <button type="submit">Save</button>
+        </form>
+    </div>
+
+    <script>
+        function previewLogo(event) {
+            const logoContainer = document.getElementById('logoPreviewContainer');
+            const file = event.target.files[0];
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    logoContainer.innerHTML = `<img id="logoPreview" src="${e.target.result}" alt="School Logo">`;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                logoContainer.innerHTML = `<span class="logo-placeholder">No Logo Uploaded</span>`;
+            }
+        }
+    </script>
+
+</body>
+</html>
